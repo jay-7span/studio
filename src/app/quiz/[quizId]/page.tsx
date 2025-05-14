@@ -1,7 +1,6 @@
 
 'use client';
 
-import { use } from 'react'; // Added for React.use()
 import { QuizPlayerView } from '@/components/quiz/quiz-player-view';
 import type { Quiz } from '@/types/quiz';
 import { useEffect, useState } from 'react';
@@ -38,8 +37,7 @@ const MOCK_QUIZZES: Quiz[] = [
 
 
 export default function QuizPage() {
-  const paramsPromise = useParams(); // useParams might return a Promise
-  const params = use(paramsPromise); // Unwrap the promise
+  const params = useParams();
   const router = useRouter();
   const quizId = params.quizId as string;
 
