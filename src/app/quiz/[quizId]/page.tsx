@@ -1,3 +1,4 @@
+
 'use client';
 
 import { QuizPlayerView } from '@/components/quiz/quiz-player-view';
@@ -48,30 +49,47 @@ export default function QuizPage() {
 
   useEffect(() => {
     if (quizId) {
-      // Simulate fetching quiz data
-      // Try fetching from localStorage first (if created in this session)
-      const storedQuizData = localStorage.getItem(`quiz-${quizId}`);
-      let foundQuiz: Quiz | undefined;
+        setIsLoading(true);
+        let foundQuizData: Quiz | undefined = undefined;
 
-      if (storedQuizData) {
-        try {
-          foundQuiz = JSON.parse(storedQuizData) as Quiz;
-        } catch (e) {
-          console.error("Failed to parse quiz from localStorage", e);
+        // 1. Check MOCK_QUIZZES first
+        foundQuizData = MOCK_QUIZZES.find(q => q.id === quizId || q.code === quizId);
+
+        // 2. If not found in mocks, check localStorage for user-created quizzes
+        if (!foundQuizData) {
+            try {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('quiz-')) { // Convention for stored quiz keys
+                        const item = localStorage.getItem(key);
+                        if (item) {
+                            const storedQuiz = JSON.parse(item) as Quiz;
+                            // Check if the URL parameter (quizId) matches the stored quiz's ID or its code
+                            if (storedQuiz.id === quizId || storedQuiz.code === quizId) {
+                                foundQuizData = storedQuiz;
+                                break; // Found a match
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("Error while searching localStorage for quiz:", e);
+                // This error is about the search process, not about quiz not being found yet.
+            }
         }
-      }
-      
-      if (!foundQuiz) {
-        // Fallback to mock data if not in localStorage or if parsing failed
-        foundQuiz = MOCK_QUIZZES.find(q => q.id === quizId || q.code === quizId);
-      }
-
-      if (foundQuiz) {
-        setQuiz(foundQuiz);
-      } else {
-        setError(`Quiz with ID or code "${quizId}" not found.`);
-      }
-      setIsLoading(false);
+        
+        if (foundQuizData) {
+            setQuiz(foundQuizData);
+            setError(null); // Clear any previous error
+        } else {
+            setError(`Quiz with ID or code "${quizId}" not found. Please verify the code/ID or ensure the quiz has been properly saved and is available.`);
+            setQuiz(null); // Clear any previous quiz data
+        }
+        setIsLoading(false);
+    } else {
+        setError("No quiz ID or code specified in the URL.");
+        setIsLoading(false);
+        setQuiz(null);
     }
   }, [quizId]);
 
@@ -96,7 +114,7 @@ export default function QuizPage() {
   }
   
   if (!quiz) {
-     return ( // Should ideally be caught by error state, but as a fallback
+     return ( 
       <div className="text-center py-10">
         <h2 className="text-2xl text-destructive mb-4">Quiz not available.</h2>
         <Button onClick={() => router.push('/')}>Go Home</Button>
