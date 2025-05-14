@@ -3,7 +3,7 @@
 
 import { QuizPlayerView } from '@/components/quiz/quiz-player-view';
 import type { Quiz } from '@/types/quiz';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react'; // Added 'use'
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -37,7 +37,8 @@ const MOCK_QUIZZES: Quiz[] = [
 
 
 export default function QuizPage() {
-  const params = useParams();
+  const paramsPromise = useParams(); 
+  const params = use(paramsPromise); 
   const router = useRouter();
   const quizId = params.quizId as string;
 

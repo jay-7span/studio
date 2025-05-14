@@ -3,7 +3,7 @@
 
 import { QuizHostView } from '@/components/quiz/quiz-host-view';
 import type { Quiz } from '@/types/quiz';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react'; // Added 'use'
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -33,7 +33,8 @@ const MOCK_QUIZZES: Quiz[] = [
 ];
 
 export default function QuizHostPage() {
-  const params = useParams();
+  const paramsPromise = useParams();
+  const params = use(paramsPromise);
   const router = useRouter();
   const quizId = params.quizId as string;
 
