@@ -3,7 +3,7 @@
 
 import { LeaderboardDisplay } from '@/components/quiz/leaderboard-display';
 import type { Quiz, QuizAttempt } from '@/types/quiz';
-import { useEffect, useState, use } from 'react'; // Added 'use'
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -34,8 +34,7 @@ const MOCK_QUIZZES: Quiz[] = [
 
 
 export default function QuizResultsPage() {
-  const paramsPromise = useParams();
-  const params = use(paramsPromise);
+  const params = useParams();
   const router = useRouter();
   const quizId = params.quizId as string;
 
@@ -55,8 +54,8 @@ export default function QuizResultsPage() {
         // 2. If not found in mocks, check localStorage for user-created quizzes
         if (!foundQuizData) {
             try {
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
+                const localStorageKeys = Object.keys(localStorage);
+                for (const key of localStorageKeys) {
                     if (key && key.startsWith('quiz-')) { // Convention for stored quiz keys
                         const item = localStorage.getItem(key);
                         if (item) {

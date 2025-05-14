@@ -3,7 +3,7 @@
 
 import { QuizPlayerView } from '@/components/quiz/quiz-player-view';
 import type { Quiz } from '@/types/quiz';
-import { useEffect, useState, use } from 'react'; // Added 'use'
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -37,8 +37,7 @@ const MOCK_QUIZZES: Quiz[] = [
 
 
 export default function QuizPage() {
-  const paramsPromise = useParams(); 
-  const params = use(paramsPromise); 
+  const params = useParams(); 
   const router = useRouter();
   const quizId = params.quizId as string;
 
@@ -59,8 +58,8 @@ export default function QuizPage() {
         // 2. If not found in mocks, check localStorage for user-created quizzes
         if (!foundQuizData) {
             try {
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
+                const localStorageKeys = Object.keys(localStorage);
+                for (const key of localStorageKeys) {
                     if (key && key.startsWith('quiz-')) { // Convention for stored quiz keys
                         const item = localStorage.getItem(key);
                         if (item) {
@@ -154,3 +153,4 @@ export default function QuizPage() {
 
   return <QuizPlayerView quiz={quiz} participantName={participantName} />;
 }
+
